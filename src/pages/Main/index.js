@@ -16,6 +16,7 @@ import MemberIcon from '@/components/MemberIcon';
 
 import Animated,{
   useSharedValue,
+  useAnimatedRef,
   useAnimatedReaction,
   withTiming,
   withSpring,
@@ -27,6 +28,8 @@ import Animated,{
   Extrapolate,
   Easing,
   set,
+  scrollTo,
+  runOnJS
 } from "react-native-reanimated";
 import {
     PanGestureHandler,
@@ -41,26 +44,19 @@ function Main(props){
   
   const [currentPage,setCurrentPage] = useState(0);
 
-  const [tabOn,setTabOn] = useState(true);
-
-  const tabWaitForRef = useSelector(state => state.tabWaitForRef);
+  // const [tabOn,setTabOn] = useState(true);
+  // const tabWaitForRef = useSelector(state => state.tabWaitForRef);
 
   const tabRef = createRef();
+
   const visionRef = createRef();
   const visionCardRef = createRef();
+  const visionScrollViewRef = useAnimatedRef();
+
   const peopleRef = createRef();
-
-  const tabViewRef = createRef();
-  const visionScrollRef = useRef();
-  const visionScrollViewRef = useRef();
-  const visionSliderRef = createRef();
-
-  const peopleVisualRef = createRef();
-  const peopleScrollRef = useRef();
-  const peopleScrollViewRef = useRef();
+  const peopleScrollViewRef = useAnimatedRef();
 
   const externalRef = createRef();
-  const externalReff = createRef();
 
   const DIRECTION_STOP = 0;
   const DIRECTION_RIGHT = -1;
@@ -72,14 +68,14 @@ function Main(props){
   let direction = useSharedValue(DIRECTION_STOP);
   let finalDirection = useSharedValue(DIRECTION_STOP);
   // let tabOn = useSharedValue(true);
-  let scrollAnimate = useSharedValue(0);
+  // let scrollAnimate = useSharedValue(0);
 
   // const setTabOn = (value) => {
   //   tabOn.value = value;
   // }
 
-  // const setPage = useDerivedValue(() => {
-  //   // setCurrentPage(activeIndex.value);
+  // useDerivedValue(() => {
+  //   runOnJS(setCurrentPage)(activeIndex.value);
   //   console.log(activeIndex.value);
   //   return activeIndex.value;
   // },);
@@ -89,8 +85,7 @@ function Main(props){
   //     return activeIndex.value;
   //   },
   //   (activeIndex) => { 
-  //     console.log(activeIndex);
-  //     // setCurrentPage(activeIndex);
+  //     // runOnJS(setCurrentPage)(activeIndex);
   //   }
   // );
 
@@ -98,13 +93,13 @@ function Main(props){
   let pages = [];
 
   if(Platform.OS==='android') pages = [
-    <Vision active={currentPage==0} setTabOn={setTabOn} visionRef={visionRef} visionCardRef={visionCardRef} tabRef={tabRef}/>,   
-    <People active={currentPage==1} peopleRef={peopleRef} tabRef={tabRef}/>,
+    <Vision visionRef={visionRef} visionCardRef={visionCardRef} visionScrollViewRef={visionScrollViewRef} tabRef={tabRef}/>,   
+    <People peopleRef={peopleRef} peopleScrollViewRef={peopleScrollViewRef} tabRef={tabRef}/>,
     <Tab/>,
   ]
   else if(Platform.OS==='ios') pages = [
-    <Vision tabViewRef={tabViewRef} visionRef={visionRef} scrollRef={visionScrollRef} scrollViewRef={visionScrollViewRef} sliderRef={visionSliderRef}/>,   
-    <People tabViewRef={tabViewRef} visualRef={peopleVisualRef} scrollRef={peopleScrollRef} scrollViewRef={peopleScrollViewRef}/>,
+    <Vision visionRef={visionRef} visionCardRef={visionCardRef} visionScrollViewRef={visionScrollViewRef}  tabRef={tabRef}/>,   
+    <People peopleRef={peopleRef} peopleScrollViewRef={peopleScrollViewRef} tabRef={tabRef}/>,
     <External/>,
   ]
 
@@ -129,7 +124,7 @@ function Main(props){
     },
     onActive: (event, ctx) => {
       if(direction.value == DIRECTION_STOP){
-        console.log(event.velocityX,event.velocityY);
+        // console.log(event.velocityX,event.velocityY);
         if(Math.abs(event.velocityX)<Math.abs(event.velocityY)) {
           direction.value = DIRECTION_DISABLE;
         }
@@ -167,7 +162,7 @@ function Main(props){
     },
   });
 
-  const animatedStyle = useAnimatedStyle(() => {
+  const tabStyle = useAnimatedStyle(() => {
     return {
       transform: [
         {
@@ -188,16 +183,31 @@ function Main(props){
     };
   });
 
+  const scrollAnimate = useSharedValue(0);
+  
   const scrollToTop = () => {
-    switch(activeIndex.value) {
-      case 0:
-        visionScrollViewRef.current.scrollTo({y:0,animated: true});
-        break;
-      case 1:
-        peopleScrollViewRef.current.scrollTo({y:0,animated: true});
-        break;
-    }
+    // switch(activeIndex.value) {
+    //   case 0:
+    //     visionScrollViewRef.current.scrollTo({y:0,animated: true});
+    //     break;
+    //   case 1:
+    //     peopleScrollViewRef.current.scrollTo({y:0,animated: true});
+    //     break;
+    // }
+    scrollAnimate.value = (scrollAnimate.value+1)%10;
   }
+
+  useAnimatedReaction(
+    () => {
+      return scrollAnimate.value;
+    },
+    (scroll) => { 
+      if(activeIndex.value==0) scrollTo(visionScrollViewRef, 0, 0, true);
+      else if(activeIndex.value==1) scrollTo(peopleScrollViewRef, 0, 0, true);
+    }
+  );
+
+
 
   return (
     <>
@@ -222,7 +232,7 @@ function Main(props){
             </Tab>
           ):(null)}
 
-          <Animated.View style={[{flexDirection:'row'},animatedStyle]}>
+          <Animated.View style={[{flexDirection:'row'},tabStyle]}>
             {tabs}
           </Animated.View>
 

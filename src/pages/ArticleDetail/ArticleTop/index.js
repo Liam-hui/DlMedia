@@ -18,7 +18,7 @@ import Upvote from '@/components/Upvote';
 import { imagePath, date } from '@/utils/MyUtils';
 
 export default function ArticleTop(props) {
-    const {data,back,goBack} = props;
+    const {data} = props;
        
     return (
         <StyledContainer>

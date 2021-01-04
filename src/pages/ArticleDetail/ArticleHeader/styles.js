@@ -7,6 +7,7 @@ export const StyledContainer = styled.View`
   align-self: flex-start;
   overflow:hidden;
   max-width:93%;
+  margin-vertical:10px;
 `;
 
 export const HeaderLeft = styled.View`

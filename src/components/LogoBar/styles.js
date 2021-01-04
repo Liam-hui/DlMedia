@@ -31,7 +31,6 @@ export const LogoTextWrapper = styled.View`
   flex-direction: row;
   align-items:center;
   justify-content: center;
-  margin-top:-10px;
 `;
 
 export const LogoText = styled.Text`

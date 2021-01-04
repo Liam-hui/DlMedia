@@ -1,20 +1,16 @@
 import { combineReducers } from 'redux';
-
 // import { reducer as session } from './session';
 
-const MIN_ARTICLE_FONT_SIZE = 10;
-const MAX_ARTICLE_FONT_SIZE = 23;
-const DEFAULT_ARTICLE_FONT_SIZE = 18;
-const CHANGE_ARTICLE_FONT_SIZE_STEP = 1;
+import storage from '@/utils/storage';
 
+const DEFAULT_ARTICLE_FONT_SIZE = 18;
+const MAX_ARTICLE_FONT_SIZE = 26;
+const CHANGE_ARTICLE_FONT_SIZE_STEP = 4;
 const articleFontSizeReducer = ( state = DEFAULT_ARTICLE_FONT_SIZE, action ) => {
   switch( action.type ) {
-      case 'INCREASE_ARTICLE_FONT_SIZE':
+      case 'CHANGE_ARTICLE_FONT_SIZE':
         if(state<MAX_ARTICLE_FONT_SIZE) return state+CHANGE_ARTICLE_FONT_SIZE_STEP;
-        else return MAX_ARTICLE_FONT_SIZE;
-      case 'DECREASE_ARTICLE_FONT_SIZE':
-        if(state<MIN_ARTICLE_FONT_SIZE) return state-CHANGE_ARTICLE_FONT_SIZE_STEP;
-        else return MIN_ARTICLE_FONT_SIZE;
+        else return DEFAULT_ARTICLE_FONT_SIZE;
       default: return state;
   }
 }
@@ -29,20 +25,38 @@ const popUpPageReducer = ( state = {on:false,mode:null}, action ) => {
   }
 }
 
-
-const tabWaitForRefReducer = ( state = [], action ) => {
+const bookmarksReducer = ( state = [], action ) => {
+  let state_new = state;
   switch( action.type ) {
-      case 'TAB_ADD_REF':
-        return state.concat([{current:action.ref}]);
+      case 'INIT_BOOKMARKS':
+        return action.bookmarks;
+      case 'SET_BOOKMARK':
+        if(state_new.find(bookmark => bookmark.id == action.id)) {
+          state_new = state_new.filter(bookmark => bookmark.id != action.id);
+          storage.removeBookmark(action.id);
+        }
+        else {
+          state_new = state_new.concat({id:action.id});
+          storage.insertBookmark(action.id);
+        }
+        return state_new;
       default: return state;
   }
 }
 
+// const tabWaitForRefReducer = ( state = [], action ) => {
+//   switch( action.type ) {
+//       case 'TAB_ADD_REF':
+//         return state.concat([{current:action.ref}]);
+//       default: return state;
+//   }
+// }
+
 const reducers = combineReducers({
   default: () => [],
   articleFontSize: articleFontSizeReducer,
-  tabWaitForRef:tabWaitForRefReducer,
   popUpPage: popUpPageReducer,
+  bookmarks: bookmarksReducer,
 });
 
 export default reducers;

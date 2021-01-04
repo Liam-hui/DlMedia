@@ -1,7 +1,8 @@
 import React, {useState, useEffect} from 'react';
-import {View, Image, Text} from 'react-native'
+import {View, Image, Text, Platform} from 'react-native'
 import { useSelector } from "react-redux";
 import ArticlePopUp from "../ArticlePopUp";
+import {fixText} from '@/utils/MyUtils';
 
 import { 
     StyledContainer,
@@ -16,7 +17,7 @@ export default function ArticleParagraph(props) {
     let {text} = props;
     let renderText = [];
     const fontSize = useSelector(state => state.articleFontSize);
-    const fontStyle = fontSize? ({fontSize:fontSize,lineHeight:fontSize*2}):(null);
+    const fontStyle = fontSize? ({fontSize:fontSize,lineHeight:fontSize*2,marginTop:Platform.OS==='android'?-fontSize*2:0}):(null);
 
     let searchBold = -100;
     let searchLearn = -100;
@@ -44,7 +45,7 @@ export default function ArticleParagraph(props) {
     return (
         <StyledContainer>
             <ParagraphText style={[{marginTop:0},fontStyle]}>
-                {renderText}
+                {fixText(renderText)}
             </ParagraphText>
 
             <ArticlePopUp show={showPopUp} setShow={setShowPopUp}/>

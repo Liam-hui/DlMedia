@@ -6,8 +6,6 @@ import {
   BackgroundImage,
   LeftBlack,
   GradientWrapper,
-  SectionTitleWrapper,
-  SectionTitle,
   ContentWrapper,
   PeopleName,
   ArticleTitle,
@@ -46,16 +44,13 @@ export default function PeopleCard(props) {
     setPosters([item.posters[0],item.posters[1]]);
   }, []);
 
-  useEffect(() => {
-    console.log('aa',active);
-  }, [active]);
-
   let posterAnimate = useSharedValue(0);
 
   const posterFirstStyle = useAnimatedStyle(()=>{
     const opacity = interpolate(posterAnimate.value, [0, 1], [0, 1], Extrapolate.CLAMP)
     return {
-      opacity:opacity,
+      // opacity:opacity,
+      opacity:1,
     }
   })
 
@@ -76,15 +71,7 @@ export default function PeopleCard(props) {
         <LinearGradient colors={['rgba(0,0,0,0)', 'rgba(0,0,0,0.85)']} style={{height:'100%'}}/>
       </GradientWrapper>
 
-      <SectionTitleWrapper>
-        <SectionTitle>people</SectionTitle>
-      </SectionTitleWrapper>
-
-      <LeftBlack>
-        <View style={{top:140,width:140}}>
-          <SepLine/>
-        </View>
-      </LeftBlack>
+      <LeftBlack/>
 
       <ContentWrapper>
         <PeopleName>{item.name}</PeopleName>

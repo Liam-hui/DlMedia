@@ -6,6 +6,7 @@ import { StyleSheet, Text, View, Dimensions, Image, ScrollView } from 'react-nat
 import {NativeViewGestureHandler} from 'react-native-gesture-handler';
 
 import SepLine from "@/components/SepLine";
+import PageTitle from "@/components/PageTitle";
 
 import VisionCards from "./VisionCards";
 import VisionLatest from "./VisionLatest";
@@ -22,7 +23,7 @@ function Vision(props) {
   const scrollRef = createRef();
 
   useEffect(() => {
-    Services.get('visions/',(data)=>setKeyItems(data.data));
+    Services.get('visions/',(data)=>setKeyItems(data.data.slice(0,5)));
     addContent(data);
   }, []);
 
@@ -87,11 +88,12 @@ function Vision(props) {
         ref={props.visionRef}
         minDeltaY={60}
       >
-        <ScrollView showsVerticalScrollIndicator={false} >
+        <ScrollView ref={props.visionScrollViewRef} showsVerticalScrollIndicator={false} bounces={false} >
           {keyItems.length>0?(
             <VisionCards visionCardRef={props.visionCardRef} tabRef={props.tabRef} scrollRef={props.visionRef} items={keyItems} mode={'vision'}/>
           ):(null)}
           {content}
+          <PageTitle title="vision"/>
         </ScrollView>
 
       </NativeViewGestureHandler>
@@ -99,28 +101,6 @@ function Vision(props) {
   );
 }
 
-
-         {/* <BlockArticlesVerticalWide/> */}
-
-          {/* <NewArticleBlock
-            items={keyItems}
-            // goToDetail={goToDetail}
-          /> */}
-          
-          {/* <SliderBlock
-            items={sliderItems}
-            goToDetail={goToDetail}
-            title={'網絡熱話'}
-            scrollRef={props.sliderRef}
-          />
-
-          <Adv/>
-
-          <QuoteBlock
-            pic={require("../../../assets/images/quote_icon.png")}
-          />
-
-          <ContactBlock/> */}
 
 export default Vision;
 

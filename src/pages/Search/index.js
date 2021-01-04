@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import { useSelector } from 'react-redux';
 import store from '@/store';
-import {View, Image, Text, TextInput, TouchableOpacity, FlatList} from 'react-native'
+import {View, Image, Text, TextInput, TouchableOpacity, FlatList, SafeAreaView} from 'react-native'
 
 import { 
     StyledContainer,
@@ -15,9 +15,15 @@ import {
 export default function PopUpPageSearch(props) {
 
     const [searchText,setSearchText] = useState('');
+    const oldSearchText = useSelector(state => state.popUpPage.searchText);
+
+    useEffect(() => {
+        if(oldSearchText) setSearchText(oldSearchText);
+    }, []);
 
     return (
         <StyledContainer>
+            <SafeAreaView/>
             <SearchBar>
                 <TouchableOpacity onPress={()=>store.dispatch({type:'POP_UP_PAGE_OFF'})}>
                     <Image source={require("../../../assets/images/icons/icon-right-arrow.png")} resizeMode={'contain'} style={{width:20,height:20}}/>
@@ -79,9 +85,10 @@ const DATA = [
 
 const searchBubble = ({item}) => {
     return(
-        <Bubble style={{backgroundColor: item.highlighted? 'rgb(255,255,255)':'rgba(255,255,255,0.66)'}}>
+        <Bubble as={TouchableOpacity} onPress={()=>store.dispatch({type:'POP_UP_PAGE_ON',mode:'searchResult',searchText:item.title})} activeOpacity={0.6} style={{backgroundColor: item.highlighted? 'rgb(255,255,255)':'rgba(255,255,255,0.66)'}}>
             <BubbleText style={{color: item.highlighted? 'black':'white'}}>{item.title}</BubbleText>
         </Bubble>
+
     );
 }
 

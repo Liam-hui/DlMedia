@@ -1,5 +1,6 @@
 import * as React from 'react';
 import RNFetchBlob from "rn-fetch-blob";
+import {Dimensions, Platform} from 'react-native';
 
 const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
@@ -25,6 +26,18 @@ export function imagePath(image) {
   if(image&&image.includes('storage')) return 'https://dl.solutionforest.net/' + image;
   else return 'https://dl.solutionforest.net/storage/' + image;
 }
+
+export function fixText(text) {
+  if(Platform.OS==='android') {
+    // for(let i=0;i<Dimensions.get("screen").width*3;i++){
+    //   text = ' ' + text;
+    // }
+    // return text;
+    return '                                                                                                                                 ' + text;
+  }
+  else return text;
+}
+
 
 export async function getBase64(image) {
   return new Promise((resolve, reject) => {

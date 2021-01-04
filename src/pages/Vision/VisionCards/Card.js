@@ -1,18 +1,18 @@
 import React, {useState, useEffect} from 'react';
-import {Text,View,Image,TouchableOpacity,Dimensions } from "react-native";
+import {Text,View,Image,TouchableOpacity,Dimensions,Platform } from "react-native";
 import {
   CardContainer,
   StyledItemBackgroundImage,
   GradientWrapper,
   LeftBlack,
-  OptionWrapper,
+  ReactionWrapper,
   InformationWrapper ,
   InformationText,
   ArticleTitle,
   BeforeTitle,
   ArticleTag,
   ArticleTitleWrapper,
-  PendingBackground,
+  SmallBackground,
   Sep,
   ItemDot,
   ItemNumberWrapper,
@@ -42,7 +42,6 @@ import { imagePath,date } from '@/utils/MyUtils';
 import * as RootNavigation from '@/utils/RootNavigation';
 import Upvote from '@/components/Upvote';
 import Bookmark from '@/components/Bookmark';
-import { opacity } from 'react-native-redash';
 
 const SCREEN_HEIGHT = Math.round(Dimensions.get('window').height);
 const SCREEN_WIDTH = Math.round(Dimensions.get('window').width);
@@ -50,32 +49,22 @@ const VISUAL_HEIGHT = Math.round(SCREEN_HEIGHT*0.8);
 const VISUAL_MIN_HEIGHT = 29;
 
 const maxAmount = VISUAL_HEIGHT - VISUAL_MIN_HEIGHT;
-const TITLE_RIGHT_SPACE = 88;
+
+const ICON_WIDTH = 78;
+const LEFT_SPACE = 85;
+const BOTTOM_ANIMATE_DIST = 75;
+const TITLE_LARGE_SCALE = 1;
+const TITLE_SMALL_SCALE = 0.464;
+const TITLE_RIGHT_SPACE = 100;
+const TITLE_LARGE_WIDTH =  (SCREEN_WIDTH - LEFT_SPACE - ICON_WIDTH) /TITLE_LARGE_SCALE ;
+const TITLE_LINE_HEIGHT = 34;
 
 export default function Card(props) {
   const {item, index, mode, activeIndex, amount, animating, direction, openCard, openingCard} = props;
 
   const [lines,setLines] = useState([]);
-  let titleHeight = useSharedValue(30);
-  let titleOtherHeight = useSharedValue(0);
-  const [titleOther,setTitleOther] = useState([]);
 
-  useEffect(() => {
-    let titleOther = [];
-    lines.forEach((line,index)=>{
-      if(index>0&&line.text) titleOther.push(
-        <ArticleTitle numberOfLines={1} style={titleLargeStyle}>{line.text}</ArticleTitle>
-      );
-    });
-    setTitleOther(titleOther);
-    if(lines.length>0){
-      titleHeight.value = lines[0].height;
-      titleOtherHeight.value = (lines.length-1)*lines[0].height;
-    }
-  }, [lines]);
-
-
-  const animatedStyle = useAnimatedStyle(() => {
+  const containerStyle = useAnimatedStyle(() => {
     let min_height = VISUAL_HEIGHT;
     if(index<activeIndex.value || ( index==activeIndex.value && !animating.value && direction.value==-1) || ( index==activeIndex.value && animating.value && direction.value==1) ) min_height = 0;
     let height = interpolate(amount.value,[0,maxAmount], [min_height,VISUAL_HEIGHT], Extrapolate.CLAMP);
@@ -85,115 +74,103 @@ export default function Card(props) {
     }
   });
 
-  let titleDefaultPosition = {left:80,bottom:-35}
-
-  const titlePosition = useAnimatedStyle(()=>{
-    const bottom = interpolate(amount.value, [0,maxAmount], [titleDefaultPosition.bottom,42], Extrapolate.CLAMP)
-    const left = interpolate(amount.value, [0,maxAmount], [titleDefaultPosition.left,80], Extrapolate.CLAMP)
+  const titleWrapperStyle = useAnimatedStyle(()=>{
+    const bottom = interpolate(amount.value, [0,maxAmount], Platform.OS==='android'?[-3,70]:[-4,60], Extrapolate.CLAMP)
     return {
       bottom:bottom,
-      // left:left,
-      left:titleDefaultPosition.left
+      left:LEFT_SPACE,
+      // backgroundColor:'blue',
     }
   })  
 
-  const titleLargeScale = 1;
-  const titleSmallScale = 0.464;
-  const iconWidth = 58;
-
-  const titleLargeStyle = {
-    width: (SCREEN_WIDTH - 80 - iconWidth) /titleLargeScale,
-  }
-
   const titleStyle = useAnimatedStyle(()=>{
-    const scale = interpolate(amount.value, [0,maxAmount], [titleSmallScale, titleLargeScale], Extrapolate.CLAMP)
-    const width = (SCREEN_WIDTH - titleDefaultPosition.left - TITLE_RIGHT_SPACE)/titleSmallScale;
+    const scale = interpolate(amount.value, [0,maxAmount], [TITLE_SMALL_SCALE, TITLE_LARGE_SCALE], Extrapolate.CLAMP)
+    const height = interpolate(amount.value, [0,maxAmount], [TITLE_LINE_HEIGHT, TITLE_LINE_HEIGHT*lines], Extrapolate.CLAMP)
+    const width = (SCREEN_WIDTH - LEFT_SPACE - TITLE_RIGHT_SPACE)/TITLE_SMALL_SCALE;
     const translateX = width*(scale-1)*0.5/scale;
 
     return {
-      transform: [{scale:scale},{translateX:translateX },{translateY:titleHeight.value*(scale-1)*0.5/scale}],
+      // transform: [{scale:scale},{translateX:translateX },{translateY:TITLE_LINE_HEIGHT*(scale-1)*0.5/scale}],
+      transform: [{scale:scale},{translateX:translateX }],
       width:width,
-      height:(titleHeight.value+4)*scale,
+      height:height,
+      left:-2,
+      // backgroundColor:'red',
     }
   })
 
-  const titleOldStyle = useAnimatedStyle(()=>{
-    const opacity = interpolate(amount.value, [0,maxAmount], [1, -1.1], Extrapolate.CLAMP)
+  const titleSmallStyle = useAnimatedStyle(()=>{
+    const opacity = interpolate(amount.value, [0,maxAmount], [1, -1.5], Extrapolate.CLAMP)
     return {
       opacity:opacity,
       position:'absolute',
       width:'100%',
+      lineHeight:TITLE_LINE_HEIGHT,
     }
   })
 
-  const titleNewStyle = useAnimatedStyle(()=>{
-    const opacity = interpolate(amount.value, [0,maxAmount], [0, 1.7], Extrapolate.CLAMP)
+  const titleLargeStyle = useAnimatedStyle(()=>{
+    const opacity = interpolate(amount.value, [0,maxAmount], [0, 1.5], Extrapolate.CLAMP)
     return {
       opacity:opacity,
       position:'absolute',
+      width: TITLE_LARGE_WIDTH,
+      lineHeight:TITLE_LINE_HEIGHT,
     }
   })
 
-  const titleOtherStyle = useAnimatedStyle(()=>{
-    const scale = interpolate(amount.value, [0,maxAmount], [titleSmallScale, titleLargeScale], Extrapolate.CLAMP)
-    const width = SCREEN_WIDTH - titleDefaultPosition.left - TITLE_RIGHT_SPACE;
-
-    const finalTranslateY = titleOtherHeight.value*(scale-1)*0.5/scale;
-    const translateY = interpolate(amount.value, [0,maxAmount], [-30, finalTranslateY], Extrapolate.CLAMP)
-
+  const articleCategoryStyle = useAnimatedStyle(()=>{
+    const opacity = interpolate(amount.value, [0,maxAmount], [0, 1], Extrapolate.CLAMP)
     return {
-      transform: [{scale:scale},{translateX:width*(scale-1)*0.5/scale},{translateY:-translateY}],
-      width:width,
-      // overflow:'hidden',
-    }
-  })
-
-  const titleOtherContainerStyle = useAnimatedStyle(()=>{
-    const height = interpolate(amount.value, [0,maxAmount], [0, titleOtherHeight.value*titleLargeScale], Extrapolate.CLAMP)
-    const opacity = interpolate(amount.value, [0,maxAmount], [-0.3, 1], Extrapolate.CLAMP)
-    return {
-      height:height,
-      justifyContent:'flex-end',
       opacity:opacity,
-      // marginTop:10,
     }
   })
 
-  const otherPosition = useAnimatedStyle(()=>{
-    const bottom = interpolate(amount.value, [0,maxAmount], [-50, 16], Extrapolate.CLAMP)
+  const articleTagStyle = useAnimatedStyle(()=>{
+    const bottom = interpolate(amount.value, [0,maxAmount], [40-BOTTOM_ANIMATE_DIST, 40], Extrapolate.CLAMP)
+    const opacity = interpolate(amount.value, [0,maxAmount], [0, 1], Extrapolate.CLAMP)
+    return {
+      opacity:opacity,
+      bottom:bottom,
+      left:LEFT_SPACE,
+    }
+  })
+
+  const InformationStyle = useAnimatedStyle(()=>{
+    const bottom = interpolate(amount.value, [0,maxAmount], [26-BOTTOM_ANIMATE_DIST, 26], Extrapolate.CLAMP)
     const opacity = interpolate(amount.value, [0,maxAmount], [-0.3, 1], Extrapolate.CLAMP)
     return {
       bottom:bottom,
       opacity:opacity,
+      left:LEFT_SPACE,
     }
-    // return{}
   })
 
-  const optionPosition = useAnimatedStyle(()=>{
-    const bottom = interpolate(amount.value, [0,maxAmount], [0,16], Extrapolate.CLAMP)
+  const ReactionStyle = useAnimatedStyle(()=>{
+    const bottom = interpolate(amount.value, [0,maxAmount], [0,20], Extrapolate.CLAMP)
+    const scale = interpolate(amount.value, [0,maxAmount], [0.7, 1], Extrapolate.CLAMP)
+    const translateX = interpolate(amount.value, [0,maxAmount], [20, 0], Extrapolate.CLAMP)
     return {
       bottom:bottom,
+      transform: [{scale:scale},{translateX:translateX}],
     }
-    // return{}
   })
 
   const itemDotStyle = useAnimatedStyle(()=>{
-    const bottom = interpolate(amount.value, [0,maxAmount], [8, -300], Extrapolate.CLAMP)
     const opacity = interpolate(amount.value, [0,maxAmount], [1, 0], Extrapolate.CLAMP)
     const scale = interpolate(amount.value, [0,maxAmount], [1, 0], Extrapolate.CLAMP)
     return {
       opacity:opacity,
-      bottom:8,
+      bottom:4,
       transform: [{scale:scale}],
     }
-    // return{}
   })
 
   const itemNumberStyle = useAnimatedStyle(()=>{
-    let pos = VISUAL_HEIGHT-30;
+    let pos = Platform.OS==='android'? VISUAL_HEIGHT-39 : VISUAL_HEIGHT-33;
     if(index<activeIndex.value || ( index==activeIndex.value && !animating.value && direction.value==-1) || ( index==activeIndex.value && animating.value && direction.value==1) ) pos = -10;
     const top = interpolate(amount.value, [0,maxAmount], [pos, 165], Extrapolate.CLAMP)
-    const scale = interpolate(amount.value, [0,maxAmount], [0.35, 1], Extrapolate.CLAMP)
+    const scale = interpolate(amount.value, [0,maxAmount], [0.3, 1], Extrapolate.CLAMP)
     return {
       top:top,
       transform: [{scale:scale}],
@@ -209,7 +186,7 @@ export default function Card(props) {
     }
   })
 
-  const pendingBackground = useAnimatedStyle(()=>{
+  const smallBackgroundStyle = useAnimatedStyle(()=>{
     let opacity_ = 1;
     if(!openingCard.value && ( index<activeIndex.value || ( index==activeIndex.value && !animating.value && direction.value==-1) || ( index==activeIndex.value && animating.value && direction.value==1) ) ) opacity_ = 0;
     const opacity = interpolate(amount.value, [0,maxAmount*0.2], [opacity_, 0], Extrapolate.CLAMP)
@@ -226,50 +203,17 @@ export default function Card(props) {
     }
   })
 
-  const picPosition = useAnimatedStyle(()=>{
-    const bottom = interpolate(amount.value, [0,maxAmount], [-50, 60], Extrapolate.CLAMP)
+  const picStyle = useAnimatedStyle(()=>{
+    const bottom = interpolate(amount.value, [0,maxAmount], [60-BOTTOM_ANIMATE_DIST, 60], Extrapolate.CLAMP)
     const opacity = interpolate(amount.value, [0,maxAmount], [0, 1], Extrapolate.CLAMP)
     return {
       bottom:bottom,
       opacity:opacity,
     }
-    // return{}
   })
-
-  const infoIconStyle = useAnimatedStyle(()=>{
-    const size = interpolate(amount.value, [0,maxAmount], [15, 20], Extrapolate.CLAMP)
-    return {
-      width:size,
-      height:size,
-    }
-  })
-
-  const optionTextStyle = useAnimatedStyle(()=>{
-    const size = interpolate(amount.value, [0,maxAmount], [10, 13], Extrapolate.CLAMP)
-    return {
-      fontSize:size,
-    }
-  })
-
-  const articleCategoryStyle = useAnimatedStyle(()=>{
-    const opacity = interpolate(amount.value, [0,maxAmount], [0, 1], Extrapolate.CLAMP)
-    return {
-      opacity:opacity,
-    }
-    // return{}
-  })
-
-  const articleTagStyle = useAnimatedStyle(()=>{
-    const opacity = interpolate(amount.value, [0,maxAmount], [0, 1], Extrapolate.CLAMP)
-    return {
-      opacity:opacity,
-    }
-    // return{}
-  })
-
 
   return (
-     <CardContainer key={item.id} as={Animated.View} style={[{zIndex:10-index},animatedStyle]}> 
+     <CardContainer key={item.id} as={Animated.View} style={[{zIndex:10-index},containerStyle]}> 
 
       <StyledItemBackgroundImage source={{uri:imagePath(item.poster)}}/>
 
@@ -277,45 +221,40 @@ export default function Card(props) {
         <LinearGradient colors={['rgba(0,0,0,0)', 'rgba(0,0,0,0.85)']} style={{height:'100%'}}/>
       </GradientWrapper>
 
-      <PendingBackground as={Animated.View} style={pendingBackground}>
+      <SmallBackground as={Animated.View} style={smallBackgroundStyle}>
         <LinearGradient colors={['rgba(65,65,65,0.55)', 'rgba(13,13,13,0.85)']} start={{x: 0.0, y: 0.5}} end={{x: 1, y: 0.5}} style={{height:'100%',width:'100%'}}/>  
-      </PendingBackground>
+      </SmallBackground>
 
       <LeftBlack/>
 
       <VSep as={Animated.View} style={VSepStyle}>
           <SepLine vertical={true} color='white'/>
       </VSep>
-      
-      <ArticleTitleWrapper as={Animated.View} style={[titleDefaultPosition,titlePosition]}>
-        <ArticleTitle onTextLayout={({ nativeEvent: {lines} }) => setLines(lines)}  numberOfLines={3} style={[{position:'absolute',opacity:0},titleLargeStyle]}>{item.title}</ArticleTitle>
+
+      <ArticleTitleWrapper as={Animated.View} style={titleWrapperStyle}>
+        <ArticleTitle onTextLayout={({ nativeEvent: {lines} }) => setLines(lines.length)} numberOfLines={3} style={{position:'absolute',opacity:0,width:TITLE_LARGE_WIDTH}}>{item.title}</ArticleTitle>
         
         <TouchableOpacity activeOpacity={0.5} onPress={()=>RootNavigation.navigate('detail',{id:item.id})}>
 
           <Animated.View style={titleStyle}>
-            <ArticleTitle as={Animated.Text} numberOfLines={1} style={titleOldStyle}>{item.title}</ArticleTitle>
-            <ArticleTitle as={Animated.Text} numberOfLines={1} style={titleNewStyle}>{lines.length>0?(lines[0].text):(null)}</ArticleTitle>
-          </Animated.View>
-
-          <Animated.View style={titleOtherContainerStyle}>
-            <Animated.View style={titleOtherStyle}>
-              {titleOther}
-            </Animated.View>
+            <ArticleTitle as={Animated.Text} numberOfLines={1} style={titleSmallStyle}>{item.title}</ArticleTitle>
+            <ArticleTitle as={Animated.Text} numberOfLines={3} style={titleLargeStyle}>{item.title}</ArticleTitle>
           </Animated.View>
 
         </TouchableOpacity>
 
         <BeforeTitle as={Animated.Text} style={articleCategoryStyle}>asdf</BeforeTitle>
-        <ArticleTag as={Animated.Text} style={articleTagStyle}>as</ArticleTag>
-  
+        
       </ArticleTitleWrapper>
 
-      <IconWrapper as={Animated.View} style={picPosition}>
-        <AuthorIcon pic={item.authorPic} size={70}/>
+      <IconWrapper as={Animated.View} style={picStyle}>
+        <AuthorIcon pic={item.authorPic} size={70} group={'inhouse'}/>
         <IconText>Vincent Lau</IconText>
       </IconWrapper>
 
-      <InformationWrapper as={Animated.View} style={otherPosition}>
+      <ArticleTag as={Animated.Text} style={articleTagStyle}>as</ArticleTag>
+
+      <InformationWrapper as={Animated.View} style={InformationStyle}>
         <InformationText>{date(item.date)}</InformationText>
         <Sep />
         <InformationText>閱讀時間 3</InformationText>
@@ -323,19 +262,19 @@ export default function Card(props) {
           {item.hasAudio==1? (<SmallIcon as={Animated.Image} source={require("../../../../assets/images/icons/icon-audio.png")} resizeMode={'contain'}/>) :(null)}
       </InformationWrapper > 
 
-      <OptionWrapper as={Animated.View} style={optionPosition}>
-        <Upvote id={item.id} count={9999} size={16}/>
+      <ReactionWrapper as={Animated.View} style={ReactionStyle}>
+        <Upvote id={item.id} count={9999} size={20}/>
         <Bookmark id={item.id} size={16}/>
-      </OptionWrapper>
+      </ReactionWrapper>
 
-      <ItemNumber as={Animated.View} style={itemNumberStyle}>
-        {/* <ItemNumber as={TouchableOpacity} onPress={()=>{
+      <ItemNumberWrapper as={Animated.View} style={itemNumberStyle}>
+        <ItemNumber as={TouchableOpacity} onPress={()=>{
           openCard(index);
-        }}> */}
+        }}>
           <ItemDot as={Animated.View} style={itemDotStyle}/>
           <ItemNumberText>0{index+1}</ItemNumberText>
-        {/* </ItemNumber> */}
-      </ItemNumber >
+        </ItemNumber>
+      </ItemNumberWrapper>
       
 
     </CardContainer>

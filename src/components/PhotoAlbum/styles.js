@@ -61,7 +61,6 @@ export const ImageContainer = styled.View`
 
 export const ArrowContainer = styled.View`
   height:100%;
-  width:100%;
   align-items: center;
   flex-direction: row;
   padding-horizontal:10px;

@@ -1,5 +1,4 @@
 import React, {useState, useEffect, useRef, createRef} from 'react';
-import store from '@/store';
 import storage from '@/utils/storage';
 import { Services } from '@/services/';
 import {Dimensions, Image, View, Text, TouchableOpacity, StyleSheet, SafeAreaView,ScrollView,Platform} from 'react-native';
@@ -10,9 +9,6 @@ import {
   MonthText,
   DateText,
   DayText,
-  ListIcon,
-  MenuColumn,
-  CategeryText,
 } from './styles';
 
 import Svg, {
@@ -41,7 +37,8 @@ import {
     Directions
   } from 'react-native-gesture-handler'
 import SepLine from "@/components/SepLine";
-import ArticlesListHalf from "@/components/ArticlesListHalf";
+import BookmarkList from "./BookmarkList";
+import ButtonList from "./ButtonList";
 
 const DIRECTION_STOP = 0;
 const DIRECTION_OPEN = -1;
@@ -54,6 +51,8 @@ export default function Menu(props) {
 
   const {position,positionMax} = props;
   const [bookmarkItems,setBookmarkItems] = useState([]);
+
+  const bookmarkListRef = createRef();
 
   useEffect(() => {
     getBookmarked();
@@ -70,11 +69,12 @@ export default function Menu(props) {
     Services.get('visions/',(data)=>setBookmarkItems(data.data));
   }
 
-  const articleRef = createRef();
+  const closeMenu = () => {
+    translationX.value = withTiming(0, {duration: 500, easing: Easing.bezier(0.25, 0.1, 0.25, 1)});
+  }
 
   let translationX = useSharedValue(0);
   let direction = useSharedValue(DIRECTION_STOP)
-
   let leftMax= useSharedValue(0);
 
   const length = 3;
@@ -130,7 +130,7 @@ export default function Menu(props) {
       },
   });
 
-  const animatedStyle = useAnimatedStyle(() => {
+  const menuStyle = useAnimatedStyle(() => {
     return {
       transform: [
         {
@@ -141,7 +141,6 @@ export default function Menu(props) {
   });
 
   const menuButtonOffset = 98;
-
   const MenuArea = () => {
     if(Platform.OS==='ios') return(
       <View style={{flexDirection:'row'}}>
@@ -195,45 +194,24 @@ export default function Menu(props) {
       </Animated.View>
   )
 
-  const PopUpPageButton = (mode,icon) => (
-      <TouchableOpacity onPress={()=>{
-        translationX.value = withTiming(0, {duration: 500, easing: Easing.bezier(0.25, 0.1, 0.25, 1)});
-        store.dispatch({type:'POP_UP_PAGE_ON',mode:mode});
-      }}>
-        <ListIcon source={icon} resizeMode={"contain"} />
-      </TouchableOpacity>
-    );
-
   const largeMenuContent = (
     <Animated.View style={[{position:'absolute',width:SCREEN_WIDTH,height:SCREEN_HEIGHT,flexDirection:'row',alignItems:'center'}]}>
+      
       <View style={{marginHorizontal:25}}>
-        {PopUpPageButton('search',require("../../../assets/images/icons/icon-search.png"))}
-        {PopUpPageButton('notification',require("../../../assets/images/icons/icon-notification.png"))}
-        {PopUpPageButton('calendar',require("../../../assets/images/icons/icon-calendar.png"))}
-        {PopUpPageButton('history',require("../../../assets/images/icons/icon-history.png"))}
+       <ButtonList closeMenu={closeMenu}/>
       </View>
 
       <SafeAreaView style={{height:'100%',flex:1}}>
-        <View style={{flexDirection:'row',marginTop:20,marginBottom:8}}>
-          <CategeryText>bookmark</CategeryText>
-        </View>
-        <View style={{flex:1,flexDirection:'row',marginBottom:80}}>
-          <MenuColumn style={{backgroundColor:'#00000055'}}>
-            <ScrollView showsVerticalScrollIndicator={false}>
-              <ArticlesListHalf items={bookmarkItems}/>
-            </ScrollView>
-          </MenuColumn>
-          {/* <MenuColumn style={{backgroundColor:'#00000099'}}/> */}
-        </View>
-
+        <BookmarkList items={bookmarkItems} bookmarkListRef={bookmarkListRef}/>
       </SafeAreaView>
+
     </Animated.View>
   );
     
 
   return (
     <>
-      <Animated.View style={[{position:'absolute',width:SCREEN_WIDTH,height:SCREEN_HEIGHT,left:SCREEN_WIDTH},animatedStyle]}> 
+      <Animated.View style={[{position:'absolute',width:SCREEN_WIDTH,height:SCREEN_HEIGHT,left:SCREEN_WIDTH},menuStyle]}> 
       
         {Platform.OS==='android'? (
           <>
@@ -268,7 +246,7 @@ export default function Menu(props) {
         <PanGestureHandler
           shouldCancelWhenOutside={false}
           onGestureEvent={onGestureEvent}
-          simultaneousHandlers={[articleRef]}
+          simultaneousHandlers={[bookmarkListRef]}
         >
           {largeMenuContent}
         </PanGestureHandler>
@@ -277,46 +255,4 @@ export default function Menu(props) {
     </>
   );
 }
-
-
-// const articleItems = [
-//   {
-//     visual:require("../../../assets/images/article1.png"),
-//     bgColor:"#215471",
-//     type:"machine",
-//     title:"貓狗可以不吃肉嗎？\n蟋蟀是新出路",
-//     name:"perpetual",
-//     tag:"#貓  ＃蟋蟀",
-//     date:"5 May 2020",
-//     duration:"3 分鐘",
-//     goodRank:"762",
-//     id:"1"
-//   },
-//   {
-//     visual:require("../../../assets/images/article2.png"),
-//     bgColor:"#E7E7E7",
-//     type:"machine",
-//     title:"為什麼德國必需率先實行「工業 4.0呢」?",
-//     name:"森美",
-//     name:"perpetual",
-//     tag:"#貓  ＃蟋蟀",
-//     date:"5 May 2020",
-//     duration:"3 分鐘",
-//     goodRank:"562",
-//     id:"2"
-//   },
-//   {
-//     visual:require("../../../assets/images/article3.png"),
-//     bgColor:"#215471",
-//     type:"machine",
-//     title:"發夢・香水・黑灰白",
-//     name:"麥浚龍",
-//     name:"perpetual",
-//     tag:"#貓  ＃蟋蟀",
-//     date:"5 May 2020",
-//     duration:"3 分鐘",
-//     goodRank:"762",
-//     id:"3"
-//   },
-// ]
 

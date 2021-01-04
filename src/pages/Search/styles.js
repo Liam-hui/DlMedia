@@ -9,9 +9,9 @@ export const StyledContainer = styled.View`
 `;
 
 export const SearchBar = styled.View`
-  margin-top:20px;
+  margin-bottom:10px;
+  padding-vertical:10px;
   width:90%;
-  height:60px;
   border-bottom-color: white;
   border-bottom-width: 0.5px;
   flex-direction:row;

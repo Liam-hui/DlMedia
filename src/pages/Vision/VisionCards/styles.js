@@ -57,7 +57,7 @@ export const LeftBlack = styled.View`
   background-color: rgba(0,0,0,0.3);
 `;
 
-export const PendingBackground = styled.View`
+export const SmallBackground = styled.View`
   position:absolute;
   left:0;
   bottom:0;
@@ -70,29 +70,28 @@ export const ArticleTitleWrapper = styled.View`
   position:absolute;
 `;
 
-
 export const ArticleTitle = styled.Text`
   color: ${colors.white};
   font-size:26px;
   line-height:30px;
   text-align:left;
-
 `;
 
 export const BeforeTitle = styled.Text`
   color: ${colors.white};
   font-size:13px;
-  line-height:35px;
   position:absolute;
   fontWeight: bold;
-  top:-38;
+  top:-23px;
 `;
 
 export const ArticleTag = styled.Text`
+  position:absolute;
   color: #FF5A5A;
   font-size:15px;
   line-height:35px;
   fontWeight: bold;
+  margin-top:-10px;
 `;
 
 export const ActorTitle = styled.Text`
@@ -107,8 +106,12 @@ export const InformationWrapper  = styled.View`
   flex-direction: row;
   position:absolute;
   align-items:center;
-  left: 80px;
-  bottom: -50px;
+`;
+
+export const InformationText = styled.Text`
+  color: ${colors.white};
+  font-size:11px;
+  margin-right: 5px;
 `;
 
 export const Sep = styled.View`
@@ -119,17 +122,12 @@ export const Sep = styled.View`
   margin-right: 10px;
 `;
 
-export const InformationText = styled.Text`
-  color: ${colors.white};
-  font-size:10px;
-  margin-right: 5px;
-`;
 
-export const OptionWrapper = styled.View`
+export const ReactionWrapper = styled.View`
   flex-direction: row;
   align-items:center;
   position:absolute;
-  right: 0px;
+  right: 3px;
   bottom: 8px;
 `;
 
@@ -144,9 +142,12 @@ export const ItemDot = styled.View`
   border-radius:5px;
 `;
 
-export const ItemNumber = styled.View`
+export const ItemNumberWrapper = styled.View`
   position:absolute;
   width: 64px;
+`;
+
+export const ItemNumber = styled.View`
   flex-direction:column;
   justify-content:center;
   align-items: center;

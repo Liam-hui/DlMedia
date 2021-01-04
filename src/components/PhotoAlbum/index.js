@@ -135,7 +135,9 @@ export default function PhotoAlbum(props) {
                             <TouchableOpacity onPress={()=>carouselRef.current.snapToPrev()} style={{}}>
                                 <Image source={require("../../../assets/images/icons/icon-grey-arrow.png")} style={{height:24,width:24}} resizeMode={'contain'}/>
                             </TouchableOpacity>
+                        </ArrowContainer >
 
+                        <ArrowContainer style={{paddingTop:topHeight,paddingBottom:bottomHeight,right:0}}>
                             <TouchableOpacity onPress={()=>carouselRef.current.snapToNext()} style={{marginLeft:'auto',transform: [{ scaleX: -1 }]}}>
                                 <Image source={require("../../../assets/images/icons/icon-grey-arrow.png")} style={{height:24,width:24}} resizeMode={'contain'}/>
                             </TouchableOpacity>

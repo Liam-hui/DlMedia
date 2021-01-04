@@ -3,6 +3,8 @@ import { StyledContainer, StyledTitle, StyledScrollView } from './styles';
 import { StyleSheet, Text, View, Dimensions, ScrollView } from 'react-native';
 import {NativeViewGestureHandler} from 'react-native-gesture-handler';
 
+import PageTitle from "@/components/PageTitle";
+
 import Animated,{
   useSharedValue,
   withTiming,
@@ -117,14 +119,17 @@ function People(props) {;
     <StyledContainer>
       <NativeViewGestureHandler
         ref={props.peopleRef}
+        minDeltaY={60}
       >
-        <ScrollView showsVerticalScrollIndicator={false} scrollEventThrottle={50}  onScroll={handleScroll}>
+        <ScrollView ref={props.peopleScrollViewRef} showsVerticalScrollIndicator={false} bounces={false} scrollEventThrottle={50}  onScroll={handleScroll}>
           <PeopleCard active={props.active} item={items[0]}/>
 
           <PeopleList
             items={contentItems}
             scroll={peopleScroll}
           />
+
+          <PageTitle title="people"/>
 
         </ScrollView>
       </NativeViewGestureHandler>

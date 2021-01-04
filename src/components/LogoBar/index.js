@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {Dimensions, View, Text, TouchableOpacity, StyleSheet} from 'react-native';
+import {Dimensions, View, Text, TouchableOpacity, StyleSheet,Platform} from 'react-native';
 import Animated,{
   useSharedValue,
   withSpring,
@@ -66,7 +66,7 @@ export default function LogoBar(props){
       <LogoWrapper>
         <TouchableOpacity onPress={()=>props.scrollToTop()} style={{display:'flex',alignItems:'center',justifyContent:'center'}}>
           <Logo logoColor={logoColor}/>
-          <LogoTextWrapper>
+          <LogoTextWrapper style={{ marginTop:Platform.OS==='android'?-8:0}}>
             <LogoText style={{marginRight:20}}>電</LogoText>
             <LogoText>笠</LogoText>
           </LogoTextWrapper>

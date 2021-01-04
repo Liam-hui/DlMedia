@@ -26,6 +26,9 @@ import {imagePath} from '@/utils/MyUtils';
 
   
 export default function ArticleDetail({navigation,route}) {
+  const [scrollPosition,setScrollPosition] = useState(0);
+  const [scrollDirection,setScrollDirection] = useState('up');
+
   const [renderVisions,setRenderVisions] = useState([]);
 
   useEffect(() => {
@@ -124,10 +127,19 @@ export default function ArticleDetail({navigation,route}) {
   return (
     <StyledContainer>
       <ArticleTopBar
+        id={route.params.id}
         back={'vision'}
         goBack={()=>navigation.goBack()}
+        scrollDirection={scrollDirection}
       />
-      <ScrollView showsVerticalScrollIndicator={false}>
+      <ScrollView showsVerticalScrollIndicator={false} scrollEventThrottle={500} 
+        onScroll={(e)=>{
+          if(e.nativeEvent.contentOffset.y<scrollPosition||e.nativeEvent.contentOffset.y<100) setScrollDirection('up');
+          else if(e.nativeEvent.contentOffset.y>scrollPosition) setScrollDirection('down');
+
+          setScrollPosition(e.nativeEvent.contentOffset.y);
+        }}
+      >
         {renderVisions}
       </ScrollView>
     </StyledContainer>

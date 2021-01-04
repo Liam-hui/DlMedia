@@ -7,6 +7,7 @@ import { Services } from '@/services/';
 import moment from 'moment';
 import {getBase64, date, imagePath} from '@/utils/MyUtils';
 import * as RootNavigation from '@/utils/RootNavigation';
+import PopUpTopBar from '@/components/PopUpTopBar';
 
 import { 
     StyledContainer,
@@ -17,7 +18,6 @@ import {
     DateWrapper,
     DateText,
 } from './styles';
-
 
 export default function History(props) {
 
@@ -66,9 +66,12 @@ export default function History(props) {
     }
 
     return (
-        <StyledContainer>
-            {items.map((item,index)=>renderItem(item,index))}
-        </StyledContainer>
+        <>
+            <PopUpTopBar headingText='History'/>
+            <StyledContainer>
+                {items.map((item,index)=>renderItem(item,index))}
+            </StyledContainer>
+        </>
     );
         
 }

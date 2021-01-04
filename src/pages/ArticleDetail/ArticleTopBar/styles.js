@@ -13,11 +13,19 @@ export const BackText = styled.Text`
   font-family: Avenir-Medium;
 `;
 
-export const TopIcon = styled.Image`
+export const Button = styled.View`
+  display:flex;
+  justify-content:center;
+  align-items:center;
   height:22px;
   width:22px;
   opacity:1;
   marginLeft:12px;
+`;
+
+export const TopIcon = styled.Image`
+  height:100%;
+  width:100%;
 `;
 
 export const Row = styled.View`

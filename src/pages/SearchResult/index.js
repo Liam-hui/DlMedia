@@ -3,15 +3,15 @@ import { useSelector } from 'react-redux';
 import store from '@/store';
 import {View, Image} from 'react-native'
 import { Services } from '@/services/';
+import PopUpTopBar from '@/components/PopUpTopBar';
 
-// import BlockArticleVertical from "@/components/BlockArticleVertical";
 
 import { 
     StyledContainer,
 } from './styles';
 
 
-export default function PopUpPageSearchResult(props) {
+export default function SearchResult(props) {
 
     const [items,setItems] = useState([]);
     const searchText = useSelector(state => state.popUpPage.searchText);
@@ -22,6 +22,7 @@ export default function PopUpPageSearchResult(props) {
 
     return (
         <StyledContainer>
+            <PopUpTopBar headingText={store.getState().popUpPage.searchText} back={()=>store.dispatch({type:'POP_UP_PAGE_ON',mode:'search',searchText:searchText})}/>
             {/* <BlockArticleVertical
                 items={items}
                 goToDetail={goToDetail}

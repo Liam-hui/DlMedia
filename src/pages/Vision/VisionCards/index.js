@@ -16,8 +16,6 @@ import Animated,{
 } from "react-native-reanimated";
 import {
   StyledContainer,
-  SectionTitleWrapper,
-  SectionTitle,
  } from './styles';
 import {
   PanGestureHandler,
@@ -57,9 +55,9 @@ function VisionCards(props){
   let marginTop = useSharedValue(0);
   let direction = useSharedValue(DIRECTION_STOP);
   let finalDirection = useSharedValue(DIRECTION_STOP);
-
-  const setEnableScrollObject = (value) =>{
-    // setEnableScroll(value);
+ 
+  const test = (value) => {
+    setEnableScroll(value);
   }
 
   const onGestureEvent = useAnimatedGestureHandler({
@@ -81,7 +79,7 @@ function VisionCards(props){
           if(activeIndex.value<items.length-1 && event.translationY<0) direction.value = DIRECTION_UP;
           else if(activeIndex.value>0 && event.translationY>0) {
             direction.value = DIRECTION_DOWN;
-            runOnJS(setEnableScrollObject)(false);
+            runOnJS(test)(false);
           }
         }
       }
@@ -135,7 +133,8 @@ function VisionCards(props){
 
         marginTop.value = withTiming(activeIndex.value*(-VISUAL_MIN_HEIGHT),animateSetting);
 
-        if(activeIndex.value==items.length-1) runOnJS(setEnableScrollObject)(true);
+        if(activeIndex.value==items.length-1) runOnJS(test)(true);
+        // if(activeIndex.value==items.length-1) enableScrollAnimate.value = true;
       }     
 
     },
@@ -153,17 +152,18 @@ function VisionCards(props){
       // easing: Easing.bezier(0.25, 0.1, 0.25, 1),
     };
 
-    for(let i=0;i<index;i++){
-      enlargeValues.value[i].value = withTiming(0, animateSetting);
-    }
-    enlargeValues.value[index].value = withTiming(TRANSLATIONY_MAX, animateSetting);
-
     activeIndex.value = index;
-
+    enlargeValues.value[index].value = withTiming(TRANSLATIONY_MAX, animateSetting);
+    for(let i=0;i<index;i++){
+      if(enlargeValues.value[i].value!=0) {
+        console.log('here',i);
+        enlargeValues.value[i].value = withTiming(0, animateSetting);
+      }
+    }
+    
     marginTop.value = withTiming(index*(-VISUAL_MIN_HEIGHT),animateSetting);
 
     setTimeout(()=>openingCard.value=false,DURATION);
-
   }
 
   const animatedContainer = useAnimatedStyle(() => {
@@ -193,18 +193,12 @@ function VisionCards(props){
 
   return (
     <>
-      <SectionTitleWrapper>
-        <SepLine/>
-        <SectionTitle>vision</SectionTitle>
-      </SectionTitleWrapper>
-
       {/* <PanGestureHandler simultaneousHandlers={[props.visionCardRef,props.tabRef,enableScroll? props.scrollRef : emptyRef]} onGestureEvent={useAnimatedGestureHandler({onStart:() => {},onActive:() => {},onEnd:() => {}})} >
         <Animated.View> */}
           <PanGestureHandler
             ref={props.visionCardRef}
             // minDeltaY={50} 
-            // simultaneousHandlers={enableTab? props.tabRef : emptyRef}
-            simultaneousHandlers={enableScroll? [props.scrollRef,props.tabRef] : props.tabRef}
+            simultaneousHandlers={enableScroll? [props.scrollRef,props.tabRef] : [props.tabRef]}
             shouldCancelWhenOutside={false}
             onGestureEvent={onGestureEvent}
             // waitFor={props.tabRef}
