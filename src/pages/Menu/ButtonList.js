@@ -19,8 +19,8 @@ export default function ButtonList(props) {
   return (
     <>
       {MenuButton('search',require("../../../assets/images/icons/icon-search.png"))}
-      {MenuButton('notification',require("../../../assets/images/icons/icon-notification.png"))}
-      {MenuButton('calendar',require("../../../assets/images/icons/icon-calendar.png"))}
+      {/* {MenuButton('notification',require("../../../assets/images/icons/icon-notification.png"))}
+      {MenuButton('calendar',require("../../../assets/images/icons/icon-calendar.png"))} */}
       {MenuButton('history',require("../../../assets/images/icons/icon-history.png"))}
   </>
   );

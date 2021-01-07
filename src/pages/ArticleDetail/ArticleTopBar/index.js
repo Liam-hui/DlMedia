@@ -6,6 +6,7 @@ import {
     BackText,
     Button,
     TopIcon,
+    GradientWrapper 
 } from './styles';
 import LinearGradient from 'react-native-linear-gradient';
 import store from '@/store';
@@ -38,11 +39,21 @@ export default function ArticleTopBar(props) {
        
     return (
         <StyledContainer as={Animated.View} style={topBarStyle}>
+            <GradientWrapper>
+                <LinearGradient 
+                    start={{ x: 0.5, y: 0 }}
+                    end={{ x: 0.5, y: 1 }}
+                    locations={[0.0,  1]}
+                    colors={['rgba(100,100,100,0.9)', 'rgba(120,120,120,0)']} 
+                    style={{height:'100%'}}
+                />
+            </GradientWrapper>
+
             <SafeAreaView>
                 <Row style={{paddingHorizontal:12,marginTop:15}}>
                 <Row as={TouchableOpacity} onPress={()=>goBack()}>
                     <BackText style={{marginBottom:-4}}>{'<  '}</BackText>
-                    <BackText style={{marginBottom:-4}}>{back}</BackText>
+                    <BackText style={{marginBottom:-4}}>back</BackText>
                 </Row>
                 <Row style={{marginLeft:'auto'}}>
                     <Button as={TouchableOpacity}>

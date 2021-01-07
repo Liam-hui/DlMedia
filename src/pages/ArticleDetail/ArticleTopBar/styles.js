@@ -5,6 +5,7 @@ export const StyledContainer = styled.View`
   width: 100%;
   position:absolute;
   z-index:999;
+  height:60px;
 `;
 
 export const BackText = styled.Text`
@@ -31,4 +32,10 @@ export const TopIcon = styled.Image`
 export const Row = styled.View`
   flex-direction:row;
   align-items: center;
+`;
+
+export const GradientWrapper = styled.View`
+  position:absolute;
+  height: 100%;
+  width: 100%;
 `;

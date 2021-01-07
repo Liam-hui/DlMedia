@@ -65,7 +65,7 @@ export default function ArticlesSliderBig(props) {
                 </View>
 
                 <View style={{marginTop:'auto',marginBottom:8,width:'100%',paddingHorizontal:8}}>
-                    <TouchableOpacity activeOpacity={0.5} onPress={()=>RootNavigation.navigate('detail',{id:item.id})}>
+                    <TouchableOpacity activeOpacity={0.5} onPress={()=>props.navigation.push('detail',{id:item.id})}>
                         <TitleText numberOfLines={3}>{item.title}</TitleText>
                     </TouchableOpacity>
                     <Row style={{marginLeft:'auto',marginRight:-5}}>

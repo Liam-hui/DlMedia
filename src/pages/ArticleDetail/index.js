@@ -112,7 +112,7 @@ export default function ArticleDetail({navigation,route}) {
       }
     });
     renderVision.push(
-      <ArticleSlider items={[]}/>,
+      <ArticleSlider navigation={navigation} items={[]}/>,
       <ArticleBottom data={data}/>,
       <ArticleAuthorIntro
         color={'#FF4663'}

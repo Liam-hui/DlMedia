@@ -33,7 +33,7 @@ export default function ArticlesList(props) {
                 <ItemInfo>
                     <TypeText>perpetual</TypeText>
 
-                    <TouchableOpacity activeOpacity={0.5} onPress={()=>RootNavigation.navigate('detail')}>
+                    <TouchableOpacity activeOpacity={0.5} onPress={()=>RootNavigation.navigate('detail',{id:item.id})}>
                         <TitleText numberOfLines={2}>{item.title}</TitleText>
                     </TouchableOpacity>
 

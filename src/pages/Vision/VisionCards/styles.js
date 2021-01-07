@@ -10,21 +10,6 @@ export const StyledContainer = styled.View`
   position: relative;
 `;
 
-export const SectionTitleWrapper = styled.View`
-  position:absolute;
-  left:0;
-  top:138px;
-  z-index:11;
-`;
-
-export const SectionTitle = styled.Text`
-  color: ${colors.white};
-  font-size:21px;
-  margin-left: 15px;
-  font-family:Avenir-Medium;
-  margin-top:5px;
-`;
-
 export const CardContainer = styled.View`
   justify-content:flex-end;
   width:100%;
